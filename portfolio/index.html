@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -187,7 +187,7 @@
             line-height: 1.6;
             text-align: center;
             margin-bottom: 3rem;
-            max-width: 600px;
+            max-width: 740px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -735,11 +735,11 @@
 
 <body>
     <div id="firefox-warning">
-        <h2>Warnung</h2>
-        <p>Es scheint, als würdest du Firefox nutzen. Leider werden einige moderne Web-Features, die auf dieser Seite
-            für Animationen und Performance wichtig sind, von Firefox nicht vollständig unterstützt. Dies kann zu
-            Rucklern oder fehlenden visuellen Effekten führen.</p>
-        <button id="firefox-warning-btn">Trotzdem Fortfahren</button>
+        <h2>Warning</h2>
+        <p>It seems you are using Firefox. Unfortunately, some modern web features, which are important for this page
+            for animations and performance, are not fully supported by Firefox. This can cause
+            stutters or missing visual effects.</p>
+        <button id="firefox-warning-btn">Continue Anyway</button>
     </div>
 
     <canvas id="pixel-canvas"></canvas>
@@ -776,13 +776,17 @@
             </div>
 
             <p class="flashlight-text bio-text">
-                [Bio-Text...]
+                Hi! I'm a tech-enthusiast and student from Germany who is passionate about exploring
+                all kinds of modern technology. My main areas of expertise are the Android ecosystem
+                and cross-platform development. After beginning with native Kotlin and Jetpack Compose,
+                I shifted my focus to Compose Multiplatform to develop efficient, declarative UIs and
+                shared codebases across multiple platforms.
             </p>
 
             <img class="contribution-snake"
                 src="https://github.com/HansHolz09/HansHolz09/blob/output/github-contribution-grid-snake-dark.svg?raw=true">
 
-            <h2 class="section-title">Aktuelles Open-Source-Projekt</h2>
+            <h2 class="section-title">Current Open-Source-Project</h2>
 
             <div id="projects-container"></div>
 
@@ -836,7 +840,7 @@
             {
                 id: 'beste-noten-app',
                 title: 'Beste-Noten-App',
-                description: 'Diese plattformübergreifende Schul-App macht den Schulalltag übersichtlicher und ist eine einfachere, schönere und schnellere Alternative zur offiziellen beste.schule-App.',
+                description: 'This cross-platform school app makes everyday school life more organized and is a simpler, more beautiful, and faster alternative to the official beste.schule app.',
                 icon: 'https://github.com/HansHolz09/Beste-Noten-App/raw/main/composeApp/src/commonMain/composeResources/drawable/logo.png',
                 repo: {
                     owner: 'HansHolz09',
@@ -1068,13 +1072,13 @@
                 html += `<div class="project-actions">`;
 
                 if (proj.features.gallery) {
-                    html += `<button class="project-btn gallery-trigger">Gallerie öffnen</button>`;
+                    html += `<button class="project-btn gallery-trigger">Open Gallery</button>`;
                 }
                 if (proj.features.github) {
-                    html += `<a href="https://github.com/${proj.repo.owner}/${proj.repo.name}" class="project-btn" onclick="event.stopPropagation()">Auf Github anzeigen</a>`;
+                    html += `<a href="https://github.com/${proj.repo.owner}/${proj.repo.name}" class="project-btn" onclick="event.stopPropagation()">Show on Github</a>`;
                 }
                 if (proj.features.web) {
-                    html += `<a href="${proj.features.web}" class="project-btn" onclick="event.stopPropagation()">Webversion nutzen</a>`;
+                    html += `<a href="${proj.features.web}" class="project-btn" onclick="event.stopPropagation()">Use Webversion</a>`;
                 }
 
                 html += `</div></div>`;
@@ -1194,7 +1198,7 @@
                 if (!preferred) { container.style.display = 'none'; return; }
 
                 mainBtn.href = preferred.url;
-                mainBtn.querySelector('span').textContent = `${preferred.ext} HERUNTERLADEN`;
+                mainBtn.querySelector('span').textContent = `DOWNLOAD ${preferred.ext} `;
 
                 dropdown.innerHTML = '';
                 assets.forEach(a => {
@@ -1202,10 +1206,12 @@
                     const item = document.createElement('a');
                     item.className = 'dropdown-item';
                     item.href = a.url;
-                    item.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>${a.label}`;
+                    item.innerHTML = `<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"><path d="M6 21H18M12 3V17M12 17L17 12M12 17L7 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${a.label}`;
                     item.addEventListener('click', () => dropdown.classList.remove('visible'));
                     dropdown.appendChild(item);
                 });
+
+                const mainCard = document.getElementById(`main-card`);
 
                 arrowBtn.addEventListener('click', e => {
                     e.stopPropagation();
@@ -1213,13 +1219,19 @@
                     if (dropdown.classList.contains('visible')) {
                         card.classList.add('tilt-disabled');
                         card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-                    } else card.classList.remove('tilt-disabled');
+                        mainCard.classList.add('tilt-disabled');
+                        mainCard.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+                    } else {
+                        card.classList.remove('tilt-disabled');
+                        mainCard.classList.remove('tilt-disabled');
+                    }
                 });
 
                 document.addEventListener('click', e => {
                     if (!dropdown.contains(e.target) && e.target !== arrowBtn) {
                         dropdown.classList.remove('visible');
                         card.classList.remove('tilt-disabled');
+                        mainCard.classList.remove('tilt-disabled');
                     }
                 });
 
@@ -1237,7 +1249,7 @@
             const cursor = document.getElementById('interaction-cursor');
 
             document.body.style.overflow = 'hidden';
-            container.innerHTML = '<div class="loading">Laden...</div>';
+            container.innerHTML = '<div class="loading">Loading...</div>';
 
             overlay.style.display = 'flex';
             void overlay.offsetWidth;
@@ -1345,7 +1357,7 @@
 
         const mainCard = document.getElementById('main-card');
         mainCard.addEventListener('mousemove', e => {
-            if (window.innerWidth < 768) return;
+            if (window.innerWidth < 768 || mainCard.classList.contains('tilt-disabled')) return;
             const r = mainCard.getBoundingClientRect();
             const x = ((e.clientX - r.left) - r.width / 2) / (r.width / 2) * 3;
             const y = ((e.clientY - r.top) - r.height / 2) / (r.height / 2) * -3;

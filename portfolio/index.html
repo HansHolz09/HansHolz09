@@ -631,10 +631,11 @@
             position: absolute;
             top: 100%;
             right: 0;
+            z-index: 999;
             margin-top: 8px;
-            background: rgba(15, 17, 21, 0.95);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(15, 17, 21, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: 8px;
             padding: 8px 0;
@@ -643,7 +644,7 @@
             opacity: 0;
             transform: translateY(10px);
             pointer-events: none;
-            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: opacity 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
             z-index: 100;
             display: flex;
             flex-direction: column;
@@ -786,7 +787,7 @@
             <img class="contribution-snake"
                 src="https://github.com/HansHolz09/HansHolz09/blob/output/github-contribution-grid-snake-dark.svg?raw=true">
 
-            <h2 class="section-title">Current Open-Source-Project</h2>
+            <h2 class="section-title">Open-Source-Projects</h2>
 
             <div id="projects-container"></div>
 
@@ -852,6 +853,22 @@
                     gallery: true,
                     github: true,
                     web: 'https://hansholz09.github.io/Beste-Noten-App/'
+                }
+            },
+            {
+                id: 'blurboard',
+                title: 'BlurBoard',
+                description: 'A fork of HeliBoard that uses the Android Window Blur API for a blurred keyboard background. In addition, I have made my own adjustments to the defaults, which make the keyboard look a little more like Gboard by default.',
+                icon: 'https://github.com/HansHolz09/BlurBoard/raw/main/art/launcher_icon/blurboard_icon.png',
+                repo: {
+                    owner: 'HansHolz09',
+                    name: 'BlurBoard'
+                },
+                galleryPath: 'art',
+                features: {
+                    download: true,
+                    gallery: true,
+                    github: true,
                 }
             }
         ];
@@ -1032,7 +1049,7 @@
                 card.id = `project-${index}`;
 
                 card.addEventListener('mousemove', e => {
-                    if (window.innerWidth < 768 || card.classList.contains('tilt-disabled')) return;
+                    if (window.innerWidth < 768 || document.body.classList.contains('dropdown-open')) return;
                     e.stopPropagation();
                     const r = card.getBoundingClientRect();
                     const x = ((e.clientX - r.left) - r.width / 2) / (r.width / 2) * 8;
@@ -1105,7 +1122,7 @@
             const container = card.querySelector('.split-btn-container');
 
             const platforms = {
-                'android': { label: 'Android APK', pattern: /android-universal\.apk$/i, ext: 'APK' },
+                'android': { label: 'Android APK', pattern: /\.apk$/i, ext: 'APK' },
                 'windows-x64': { label: 'Windows EXE (x64)', pattern: /windows-x64\.exe$/i, ext: 'EXE (x64)' },
                 'windows-arm64': { label: 'Windows EXE (ARM64)', pattern: /windows-arm64\.exe$/i, ext: 'EXE (ARM64)' },
                 'macos-x64': { label: 'macOS DMG (x64)', pattern: /macos-x64\.dmg$/i, ext: 'DMG (x64)' },
@@ -1198,43 +1215,79 @@
                 if (!preferred) { container.style.display = 'none'; return; }
 
                 mainBtn.href = preferred.url;
-                mainBtn.querySelector('span').textContent = `DOWNLOAD ${preferred.ext} `;
 
-                dropdown.innerHTML = '';
-                assets.forEach(a => {
-                    if (a.url === preferred.url) return;
-                    const item = document.createElement('a');
-                    item.className = 'dropdown-item';
-                    item.href = a.url;
-                    item.innerHTML = `<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"><path d="M6 21H18M12 3V17M12 17L17 12M12 17L7 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${a.label}`;
-                    item.addEventListener('click', () => dropdown.classList.remove('visible'));
-                    dropdown.appendChild(item);
-                });
+                if (assets.length === 1 && assets[0].key === 'android') {
+                    mainBtn.querySelector('span').textContent = 'DOWNLOAD APK';
+                    mainBtn.style.borderRight = 'none';
+                    arrowBtn.style.display = 'none';
+                } else {
+                    mainBtn.querySelector('span').textContent = `DOWNLOAD ${preferred.ext} `;
+
+                    dropdown.innerHTML = '';
+                    assets.forEach(a => {
+                        if (a.url === preferred.url) return;
+                        const item = document.createElement('a');
+                        item.className = 'dropdown-item';
+                        item.href = a.url;
+                        item.innerHTML = `<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"><path d="M6 21H18M12 3V17M12 17L17 12M12 17L7 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${a.label}`;
+                        item.addEventListener('click', () => dropdown.classList.remove('visible'));
+                        dropdown.appendChild(item);
+                    });
+                }
 
                 const mainCard = document.getElementById(`main-card`);
 
                 arrowBtn.addEventListener('click', e => {
                     e.stopPropagation();
-                    dropdown.classList.toggle('visible');
-                    if (dropdown.classList.contains('visible')) {
-                        card.classList.add('tilt-disabled');
-                        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-                        mainCard.classList.add('tilt-disabled');
-                        mainCard.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-                    } else {
-                        card.classList.remove('tilt-disabled');
-                        mainCard.classList.remove('tilt-disabled');
-                    }
-                });
 
-                document.addEventListener('click', e => {
-                    if (!dropdown.contains(e.target) && e.target !== arrowBtn) {
-                        dropdown.classList.remove('visible');
-                        card.classList.remove('tilt-disabled');
-                        mainCard.classList.remove('tilt-disabled');
-                    }
-                });
+                    const existing = document.querySelector('.dropdown-menu-body');
+                    let wasOpen = false;
 
+                    if (existing) {
+                        wasOpen = existing.dataset.triggerId === `dropdown-${proj.id}`;
+                        existing.classList.remove('visible');
+                        setTimeout(() => existing.remove(), 200);
+                        document.body.classList.remove('dropdown-open');
+                        document.querySelectorAll('.card-dropdown-active').forEach(c => c.classList.remove('card-dropdown-active'));
+                    }
+
+                    if (wasOpen) return;
+
+                    const d = document.createElement('div');
+                    d.className = 'dropdown-menu dropdown-menu-body';
+                    d.dataset.triggerId = `dropdown-${proj.id}`;
+
+                    assets.forEach(a => {
+                        if (a.url === preferred.url) return;
+                        const item = document.createElement('a');
+                        item.className = 'dropdown-item';
+                        item.href = a.url;
+                        item.innerHTML = `<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"><path d="M6 21H18M12 3V17M12 17L17 12M12 17L7 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${a.label}`;
+                        item.addEventListener('click', () => {
+                            d.classList.remove('visible');
+                            setTimeout(() => d.remove(), 200);
+                            document.body.classList.remove('dropdown-open');
+                            card.classList.remove('card-dropdown-active');
+                        });
+                        d.appendChild(item);
+                    });
+
+                    document.body.appendChild(d);
+
+                    const rect = container.getBoundingClientRect();
+                    d.style.position = 'absolute';
+                    d.style.top = `${rect.bottom + window.scrollY}px`;
+                    d.style.right = `${document.documentElement.clientWidth - rect.right}px`;
+                    d.style.marginTop = '8px';
+                    d.style.pointerEvents = 'all';
+
+                    requestAnimationFrame(() => {
+                        d.classList.add('visible');
+                    });
+
+                    document.body.classList.add('dropdown-open');
+                    card.classList.add('card-dropdown-active');
+                });
             } catch (e) { container.style.display = 'none'; }
         }
 
@@ -1270,8 +1323,21 @@
             }
 
             if (currentGalleryImages.length === 0) currentGalleryImages = [proj.icon];
+            updateGalleryNavVisibility();
             updateGalleryImage();
             cursor.style.display = 'block';
+        }
+
+        function updateGalleryNavVisibility() {
+            const prevBtn = document.querySelector('.gallery-prev');
+            const nextBtn = document.querySelector('.gallery-next');
+            if (currentGalleryImages.length <= 1) {
+                if (prevBtn) prevBtn.style.display = 'none';
+                if (nextBtn) nextBtn.style.display = 'none';
+            } else {
+                if (prevBtn) prevBtn.style.display = 'flex';
+                if (nextBtn) nextBtn.style.display = 'flex';
+            }
         }
 
         function updateGalleryImage() {
@@ -1356,14 +1422,26 @@
         }
 
         const mainCard = document.getElementById('main-card');
+
         mainCard.addEventListener('mousemove', e => {
-            if (window.innerWidth < 768 || mainCard.classList.contains('tilt-disabled')) return;
+            if (window.innerWidth < 768 || document.body.classList.contains('dropdown-open')) return;
             const r = mainCard.getBoundingClientRect();
             const x = ((e.clientX - r.left) - r.width / 2) / (r.width / 2) * 3;
             const y = ((e.clientY - r.top) - r.height / 2) / (r.height / 2) * -3;
             mainCard.style.transform = `perspective(1000px) rotateX(${y}deg) rotateY(${x}deg)`;
         });
         mainCard.addEventListener('mouseleave', () => mainCard.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)');
+
+        document.addEventListener('click', (e) => {
+            const existing = document.querySelector('.dropdown-menu-body');
+            const target = e.target;
+            if (existing && !target.closest('.split-btn-arrow') && !existing.contains(target)) {
+                existing.classList.remove('visible');
+                setTimeout(() => existing.remove(), 200);
+                document.querySelectorAll('.card-dropdown-active').forEach(c => c.classList.remove('card-dropdown-active'));
+                document.body.classList.remove('dropdown-open');
+            }
+        });
 
         renderProjects();
     </script>

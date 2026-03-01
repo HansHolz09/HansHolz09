@@ -1123,6 +1123,7 @@
 
             const platforms = {
                 'android': { label: 'Android APK', pattern: /\.apk$/i, ext: 'APK' },
+                'ios': { label: 'iOS/iPadOS IPA', pattern: /\.ipa$/i, ext: 'IPA' },
                 'windows-x64': { label: 'Windows EXE (x64)', pattern: /windows-x64\.exe$/i, ext: 'EXE (x64)' },
                 'windows-arm64': { label: 'Windows EXE (ARM64)', pattern: /windows-arm64\.exe$/i, ext: 'EXE (ARM64)' },
                 'macos-x64': { label: 'macOS DMG (x64)', pattern: /macos-x64\.dmg$/i, ext: 'DMG (x64)' },
@@ -1182,10 +1183,26 @@
 
             async function getOS() {
                 const u = navigator.userAgent.toLowerCase();
+                const platform = navigator.platform?.toLowerCase() || '';
+
                 if (u.includes('android')) return 'android';
-                if (u.includes('win')) return u.includes('arm') ? 'windows-arm64' : 'windows-x64';
-                if (u.includes('mac')) return detectAppleSilicon() ? 'macos-arm64' : 'macos-x64';
-                if (u.includes('linux')) return u.includes('aarch64') ? 'linux-arm64' : 'linux-x64';
+
+                const isIOS = /iphone|ipad|ipod/.test(u) ||
+                    (u.includes('mac') && navigator.maxTouchPoints > 1);
+                if (isIOS) return 'ios';
+
+                if (u.includes('win')) {
+                    return (u.includes('arm64') || u.includes('arm;')) ? 'windows-arm64' : 'windows-x64';
+                }
+
+                if (u.includes('mac')) {
+                    return detectAppleSilicon() ? 'macos-arm64' : 'macos-x64';
+                }
+
+                if (u.includes('linux')) {
+                    return (u.includes('aarch64') || u.includes('armv8')) ? 'linux-arm64' : 'linux-x64';
+                }
+
                 return 'android';
             }
 
@@ -1235,10 +1252,10 @@
                     });
                 }
 
-                const mainCard = document.getElementById(`main-card`);
-
                 arrowBtn.addEventListener('click', e => {
                     e.stopPropagation();
+
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)'
 
                     const existing = document.querySelector('.dropdown-menu-body');
                     let wasOpen = false;
